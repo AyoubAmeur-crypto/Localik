@@ -462,7 +462,7 @@ export default function ContactFormSection() {
                     </div>
                     <DatePicker
                       selected={startDate}
-                      onChange={(date) => {
+                      onChange={(date: Date | null) => {
                         setStartDate(date);
                         setIsStartDateOpen(false);
                         setIsEndDateOpen(true);
@@ -519,7 +519,7 @@ export default function ContactFormSection() {
                     </div>
                     <DatePicker
                       selected={endDate}
-                      onChange={(date) => {
+                      onChange={(date: Date | null) => {
                         setEndDate(date);
                         setIsEndDateOpen(false);
                       }}

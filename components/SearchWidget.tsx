@@ -88,8 +88,8 @@ export default function SearchWidget() {
     setIsDateOpen(false);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     closeAllDropdowns();
     const searchData = {
       location: selectedLocation || "Non sélectionné",
