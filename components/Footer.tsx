@@ -233,6 +233,9 @@ export default function Footer() {
             <span className="font-sans font-normal text-xs leading-[18px] text-[#D6D6D6]">
               Copyright 2026 ・ Localik, Tous droits réservés
             </span>
+            <span className="font-sans font-normal text-xs leading-[18px] text-[#D6D6D6]">
+              Made with ❤️ by Ayoub Ameur
+            </span>
           </div>
         </div>
 

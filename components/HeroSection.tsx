@@ -42,7 +42,7 @@ export default function HeroSection() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="relative w-full bg-white overflow-x-clip overflow-y-visible lg:h-[800px] min-h-[800px] lg:min-h-0 z-30">
+    <section ref={containerRef} className="relative w-full bg-white overflow-x-clip overflow-y-visible lg:h-[860px] min-h-[860px] lg:min-h-0 z-30">
       
       {/* Decorative Background Blob - Desktop Only */}
       <div className="absolute top-[-33px] left-[866px] w-[803px] h-[866px] opacity-[0.13] pointer-events-none hidden lg:block">
@@ -82,7 +82,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="font-sans font-normal text-base md:text-lg leading-[27px] text-desc-gray">
-              Obtenez une voiture où et quand vous en avez besoin avec votre appareil iOS et Android.
+              Trouvez et louez la voiture idéale pour vos déplacements au Maroc, directement en ligne et en toute simplicité.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center lg:justify-start">
@@ -106,7 +106,7 @@ export default function HeroSection() {
         </div>
 
         {/* Floating Search Widget */}
-        <div className="hero-animate-widget relative mt-12 lg:mt-0 lg:absolute lg:top-[680px] lg:left-[160px] lg:w-[1120px] z-40 bg-white rounded-widget shadow-widget border border-gray-100 p-6 md:p-8 lg:py-3 lg:pr-3 lg:pl-8 min-h-[72px] w-full">
+        <div className="hero-animate-widget relative mt-12 lg:mt-0 lg:absolute lg:top-[740px] lg:left-[160px] lg:w-[1120px] z-40 bg-white rounded-widget shadow-widget border border-gray-100 p-6 md:p-8 lg:py-3 lg:pr-3 lg:pl-8 min-h-[72px] w-full">
           <SearchWidget />
         </div>
 

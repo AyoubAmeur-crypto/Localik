@@ -270,7 +270,7 @@ export default function SearchWidget() {
           {isDateOpen && (
             <div 
               onClick={(e) => e.stopPropagation()}
-              className="absolute left-0 lg:left-auto lg:right-0 mt-3 top-[100%] bg-white rounded-xl border border-gray-200 z-50 p-4 transform origin-top transition-all duration-200 flex flex-col items-center animate-fadeIn"
+              className="absolute left-0 lg:left-auto lg:right-0 mt-3 top-[100%] bg-white rounded-xl border border-gray-200 z-50 p-4 transform origin-top transition-all duration-200 flex flex-col items-center animate-fadeIn w-full max-w-[calc(100vw-32px)] lg:max-w-none lg:w-[620px]"
             >
               <div className="flex items-center justify-between w-full border-b border-gray-100 pb-3 mb-3">
                 <span className="font-sans font-semibold text-sm text-dark">
@@ -299,6 +299,7 @@ export default function SearchWidget() {
                 monthsShown={monthsShown}
                 minDate={new Date()}
                 disabledKeyboardNavigation
+                calendarClassName="rentcar-range-calendar"
               />
             </div>
           )}
@@ -314,7 +315,22 @@ export default function SearchWidget() {
         onClick={handleSearchSubmit}
         className="w-full lg:w-[159px] h-12 py-0 text-base flex-shrink-0 z-10 transition-transform active:scale-95"
       />
+
+      {/* Desktop-only fix: force the two datepicker months into an aligned flex row.
+          Scoped to lg breakpoint so mobile (monthsShown=1) is untouched. */}
+      <style jsx global>{`
+        @media (min-width: 1024px) {
+          .rentcar-range-calendar.react-datepicker {
+            display: flex !important;
+          }
+          .rentcar-range-calendar .react-datepicker__month-container {
+            float: none !important;
+          }
+          .rentcar-range-calendar .react-datepicker__month-container + .react-datepicker__month-container {
+            border-left: 1px solid #f3f4f6;
+          }
+        }
+      `}</style>
     </div> 
   );
 }
-

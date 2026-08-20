@@ -24,6 +24,7 @@ const popularCars: (CarCardProps & { id: string })[] = [
     doors: 5,
     price: 250,
     imageSrc: "/images/1.png",
+    isAvailable: true,
   },
   {
     id: "renault-clio-gray",
@@ -36,6 +37,7 @@ const popularCars: (CarCardProps & { id: string })[] = [
     doors: 5,
     price: 300,
     imageSrc: "/images/2.png",
+    isAvailable: true,
   },
   {
     id: "vw-troc",
@@ -48,6 +50,7 @@ const popularCars: (CarCardProps & { id: string })[] = [
     doors: 5,
     price: 450,
     imageSrc: "/images/3.png",
+    isAvailable: true,
   },
   {
     id: "renault-clio-blue",
@@ -60,6 +63,7 @@ const popularCars: (CarCardProps & { id: string })[] = [
     doors: 5,
     price: 380,
     imageSrc: "/images/4.png",
+    isAvailable: false,
   },
   {
     id: "hyundai-tucson",
@@ -72,6 +76,7 @@ const popularCars: (CarCardProps & { id: string })[] = [
     doors: 5,
     price: 550,
     imageSrc: "/images/5.png",
+    isAvailable: true,
   },
 ];
 

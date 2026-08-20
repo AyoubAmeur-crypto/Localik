@@ -19,8 +19,11 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Localik - Trouvez, réservez et louez une voiture facilement",
-  description: "Obtenez une voiture où et quand vous en avez besoin avec votre appareil iOS et Android.",
+  title: "Localik",
+  description: "Trouvez et louez la voiture idéale pour vos déplacements au Maroc, directement en ligne et en toute simplicité.",
+  icons: {
+    icon: "/images/localik.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

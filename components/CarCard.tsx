@@ -10,6 +10,7 @@ export interface CarCardProps {
   doors: number;
   price: number;
   imageSrc: string;
+  isAvailable?: boolean;
 }
 
 export default function CarCard({
@@ -22,9 +23,23 @@ export default function CarCard({
   doors,
   price,
   imageSrc,
+  isAvailable = true,
 }: CarCardProps) {
   return (
-<div className="w-full max-w-[300px] h-[405px] rounded-card bg-white shadow-card flex flex-col overflow-hidden transition-transform duration-300 hover:scale-[1.02] border border-transparent hover:border-gray-200">      
+    <div className={`relative w-full max-w-[300px] h-[405px] rounded-card bg-white shadow-card flex flex-col overflow-hidden transition-all duration-300 border ${
+      isAvailable 
+        ? "hover:scale-[1.02] border-transparent hover:border-gray-200 cursor-pointer" 
+        : "opacity-50 border-gray-150"
+    }`}>
+      {/* Diagonal Corner Ribbon Badge */}
+      <div className={`absolute top-[16px] right-[-30px] w-[110px] py-0.5 text-[8px] font-sans font-extrabold uppercase tracking-widest text-center text-white rotate-45 z-20 border-b border-white/20 shadow-md ${
+        isAvailable 
+          ? "bg-[#1572D3]" 
+          : "bg-[#E53E3E]"
+      }`}>
+        {isAvailable ? "Disponible" : "Indisponible"}
+      </div>
+
       {/* Top Image area */}
       <div className="relative w-full h-[155px] flex items-center justify-center bg-gray-50/50 p-4">
         <div className="relative w-full h-full">
@@ -183,23 +198,32 @@ export default function CarCard({
             </div>
           </div>
 
-          <button className="w-full h-10 bg-primary hover:bg-blue-600 active:scale-95 transition-all text-white font-sans font-medium text-sm leading-[17px] rounded-lg flex items-center justify-center gap-2 cursor-pointer">
-            <span>Louer</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white w-4 h-4"
-            >
-              <line x1="5" x2="19" y1="12" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+          <button 
+            disabled={!isAvailable}
+            className={`w-full h-10 transition-all font-sans font-medium text-sm leading-[17px] rounded-lg flex items-center justify-center gap-2 ${
+              isAvailable 
+                ? "bg-primary hover:bg-blue-600 active:scale-95 text-white cursor-pointer" 
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <span>{isAvailable ? "Louer" : "Indisponible"}</span>
+            {isAvailable && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-white w-4 h-4"
+              >
+                <line x1="5" x2="19" y1="12" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            )}
           </button>
         </div>
 
