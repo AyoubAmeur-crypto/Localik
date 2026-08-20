@@ -63,7 +63,7 @@ export default function HeroSection() {
         <div className="flex flex-col items-center gap-12 pt-24 md:pt-28 lg:pt-0 mt-0 lg:block">
           
           {/* Left Text Block */}
-          <div className="hero-animate-text flex flex-col gap-10 max-w-[480px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[210px] lg:left-[160px] lg:w-[480px] z-10">
+          <div className="hero-animate-text flex flex-col gap-10 max-w-[480px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[160px] lg:left-[160px] lg:w-[480px] z-10">
             <h1 className="font-sans font-semibold text-[48px] md:text-[54px] lg:text-[60px] leading-[1.1] md:leading-[1.1] lg:leading-[66px] text-dark tracking-tight">
               Trouvez, réservez et louez <br />
               <span className="relative inline-block text-primary whitespace-nowrap mt-1 lg:mt-0">
