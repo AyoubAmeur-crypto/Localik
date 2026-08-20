@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/localik.png" alt="Localik Logo" width="200" style="background-color: white; padding: 8px; border-radius: 8px;" />
+  <img src="public/images/lokalikw.png" alt="Localik Logo" width="200" />
 </p>
 
 <h1 align="center">Localik - Car Rental Platform</h1>
