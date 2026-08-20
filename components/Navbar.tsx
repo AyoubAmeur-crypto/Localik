@@ -32,13 +32,20 @@ export default function Navbar() {
   // Entrance animation for the Navbar
   useGSAP(
     () => {
-      gsap.from(containerRef.current, {
-        y: -80,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out",
-        delay: 0.1,
-      });
+      gsap.fromTo(
+        containerRef.current,
+        {
+          y: -80,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.2,
+          ease: "power4.out",
+          delay: 0.1,
+        }
+      );
     },
     { scope: containerRef }
   );
@@ -72,7 +79,7 @@ export default function Navbar() {
   return (
     <header
       ref={containerRef}
-      className="fixed top-0 left-0 right-0 w-full z-50 flex justify-center pointer-events-none pt-4 lg:pt-4 px-4 md:px-12 lg:px-0"
+      className="fixed top-0 left-0 right-0 w-full z-50 flex justify-center pointer-events-none pt-4 lg:pt-4 px-4 md:px-12 lg:px-0 opacity-0"
     >
       <div
         ref={navCardRef}

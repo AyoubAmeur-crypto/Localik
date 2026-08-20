@@ -12,33 +12,42 @@ export default function HeroSection() {
 
   useGSAP(() => {
     // Staggered slide up & fade in for text column elements
-    gsap.from(".hero-animate-text > *", {
-      y: 35,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: "power3.out",
-      delay: 0.2,
-    });
+    gsap.fromTo(".hero-animate-text > *", 
+      { y: 35, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power3.out",
+        delay: 0.2,
+      }
+    );
 
     // Elegant reveal from right with subtle scaling for the car image
-    gsap.from(".hero-animate-car", {
-      x: 80,
-      opacity: 0,
-      scale: 0.96,
-      duration: 1.2,
-      ease: "power4.out",
-      delay: 0.4,
-    });
+    gsap.fromTo(".hero-animate-car",
+      { x: 80, opacity: 0, scale: 0.96 },
+      {
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.4,
+      }
+    );
 
     // Floating Search Widget slides up after text and car elements load
-    gsap.from(".hero-animate-widget", {
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power3.out",
-      delay: 0.6,
-    });
+    gsap.fromTo(".hero-animate-widget",
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.6,
+      }
+    );
   }, { scope: containerRef });
 
   return (
@@ -111,6 +120,13 @@ export default function HeroSection() {
         </div>
 
       </div>
+
+      {/* Prevent GSAP visual snap/flash (FOUC) by hiding elements initially */}
+      <style>{`
+        .hero-animate-text > *, .hero-animate-car, .hero-animate-widget {
+          opacity: 0;
+        }
+      `}</style>
     </section>
   );
 }
