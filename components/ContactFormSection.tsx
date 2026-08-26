@@ -48,13 +48,34 @@ const cars = [
   },
 ];
 
-export default function ContactFormSection() {
+interface ContactCar {
+  id: string;
+  name: string;
+  price: number;
+  imageSrc: string;
+}
+
+interface ContactFormSectionProps {
+  availableCars?: ContactCar[];
+}
+
+export default function ContactFormSection({ availableCars = [] }: ContactFormSectionProps) {
   const containerRef = useRef<HTMLElement>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("Casablanca");
   const [locationSearch, setLocationSearch] = useState("");
-  const [selectedCarId, setSelectedCarId] = useState("dacia-sandero");
+
+  const carsList = availableCars.length > 0 ? availableCars : cars;
+  const [selectedCarId, setSelectedCarId] = useState("");
+
+  useEffect(() => {
+    if (carsList.length > 0) {
+      if (!selectedCarId || !carsList.find(c => c.id === selectedCarId)) {
+        setSelectedCarId(carsList[0].id);
+      }
+    }
+  }, [carsList, selectedCarId]);
 
   // Popover toggle states
   const [isLocationOpen, setIsLocationOpen] = useState(false);
@@ -108,7 +129,7 @@ export default function ContactFormSection() {
     });
   };
 
-  const activeCar = cars.find((c) => c.id === selectedCarId);
+  const activeCar = carsList.find((c) => c.id === selectedCarId);
   const filteredCities = cities.filter((city) =>
     city.toLowerCase().includes(locationSearch.toLowerCase())
   );
@@ -368,7 +389,7 @@ export default function ContactFormSection() {
 
               {isCarOpen && (
                 <div className="absolute left-0 mt-2 top-[100%] w-full bg-white rounded-xl shadow-widget border border-gray-150 z-50 p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar transform origin-top transition-all duration-200">
-                  {cars.map((car) => (
+                  {carsList.map((car) => (
                     <button
                       key={car.id}
                       type="button"

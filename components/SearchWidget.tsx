@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MapPin, Calendar, Search, ChevronDown, X } from "lucide-react";
 import Button from "./Button";
+import { useRouter } from "next/navigation";
 
 // Popular Moroccan cities list
 const MOROCCAN_CITIES = [
@@ -23,6 +24,7 @@ const MOROCCAN_CITIES = [
 ];
 
 export default function SearchWidget() {
+  const router = useRouter();
   // State for dropdown visibility
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isDateOpen, setIsDateOpen] = useState(false);
@@ -91,17 +93,11 @@ export default function SearchWidget() {
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     closeAllDropdowns();
-    const searchData = {
-      location: selectedLocation || "Non sélectionné",
-      pickupDate: startDate ? startDate.toISOString() : null,
-      returnDate: endDate ? endDate.toISOString() : null,
-    };
-    alert(
-      `Recherche de locations à ${searchData.location}\nDépart : ${formatDateDisplay(
-        startDate,
-        "Aucun"
-      )}\nRetour : ${formatDateDisplay(endDate, "Aucun")}`
-    );
+    const params = new URLSearchParams();
+    if (selectedLocation) params.set("location", selectedLocation);
+    if (startDate) params.set("startDate", startDate.toISOString());
+    if (endDate) params.set("endDate", endDate.toISOString());
+    router.push(`/marketplace?${params.toString()}`);
   };
 
   return (
@@ -117,7 +113,7 @@ export default function SearchWidget() {
               setIsLocationOpen(!isLocationOpen);
               setIsDateOpen(false);
             }}
-            className={`flex flex-row items-center gap-4 w-full cursor-pointer p-3 rounded-lg hover:bg-gray-50/80 transition-colors z-10 ${
+            className={`flex flex-row items-center gap-4 w-full cursor-pointer p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 ${
               isLocationOpen ? "bg-gray-50" : ""
             }`}
           >
@@ -143,7 +139,7 @@ export default function SearchWidget() {
 
           {/* Location Dropdown Popover */}
           {isLocationOpen && (
-            <div className="absolute left-0 mt-3 top-[100%] w-full sm:w-[350px] bg-white rounded-xl shadow-widget border border-gray-100 z-50 p-3 transform origin-top transition-all duration-200">
+            <div className="absolute left-0 mt-3 top-[100%] w-full sm:w-[350px] bg-white rounded-none shadow-widget border border-gray-100 z-50 p-3 transform origin-top transition-all duration-200">
               {/* Search Input field */}
               <div className="relative p-2">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -153,7 +149,7 @@ export default function SearchWidget() {
                   value={locationSearch}
                   onChange={(e) => setLocationSearch(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-dark placeholder-gray-400 focus:outline-none focus:border-primary focus:bg-white transition-all font-sans"
+                  className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm text-dark placeholder-gray-400 focus:outline-none focus:border-primary focus:bg-white transition-all font-sans"
                   autoFocus
                 />
                 {locationSearch && (
@@ -182,7 +178,7 @@ export default function SearchWidget() {
                         setSelectedLocation(city);
                         setLocationSearch("");
                       }}
-                      className={`flex items-center gap-4 w-full text-left px-4 py-3 rounded-xl text-base font-sans font-medium transition-colors ${
+                      className={`flex items-center gap-4 w-full text-left px-4 py-3 rounded-none text-base font-sans font-medium transition-colors ${
                         selectedLocation === city
                           ? "bg-primary text-white"
                           : "text-dark hover:bg-primary-light/40"
@@ -216,7 +212,7 @@ export default function SearchWidget() {
               setIsDateOpen(!isDateOpen);
               setIsLocationOpen(false);
             }}
-            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-lg hover:bg-gray-50/80 transition-colors z-10 lg:border-l lg:border-gray-200 lg:pl-6 ${
+            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 lg:border-l lg:border-gray-200 lg:pl-6 ${
               isDateOpen ? "bg-gray-50" : ""
             }`}
           >
@@ -244,7 +240,7 @@ export default function SearchWidget() {
               setIsDateOpen(!isDateOpen);
               setIsLocationOpen(false);
             }}
-            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-lg hover:bg-gray-50/80 transition-colors z-10 sm:border-l sm:border-gray-200 sm:pl-6 lg:border-l lg:border-gray-200 lg:pl-6 ${
+            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 sm:border-l sm:border-gray-200 sm:pl-6 lg:border-l lg:border-gray-200 lg:pl-6 ${
               isDateOpen ? "bg-gray-50" : ""
             }`}
           >
@@ -270,7 +266,7 @@ export default function SearchWidget() {
           {isDateOpen && (
             <div 
               onClick={(e) => e.stopPropagation()}
-              className="absolute left-0 lg:left-auto lg:right-0 mt-3 top-[100%] bg-white rounded-xl border border-gray-200 z-50 p-4 transform origin-top transition-all duration-200 flex flex-col items-center animate-fadeIn w-full max-w-[calc(100vw-32px)] lg:max-w-none lg:w-[620px]"
+              className="absolute left-0 lg:left-auto lg:right-0 mt-3 top-[100%] bg-white rounded-none border border-gray-200 z-50 p-4 transform origin-top transition-all duration-200 flex flex-col items-center animate-fadeIn w-full max-w-[calc(100vw-32px)] lg:max-w-none lg:w-[620px]"
             >
               <div className="flex items-center justify-between w-full border-b border-gray-100 pb-3 mb-3">
                 <span className="font-sans font-semibold text-sm text-dark">

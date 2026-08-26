@@ -95,8 +95,8 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center lg:justify-start">
-              <Button label="Louer maintenant" variant="primary" href="#" className="w-full sm:w-auto text-center" />
-              <Button label="Voir les voitures" variant="link" href="#" className="w-full sm:w-auto border border-primary text-primary hover:bg-primary-light rounded-button py-4 px-8 font-sans font-medium transition-all text-center justify-center" />
+              <Button label="Louer maintenant" variant="primary" href="/marketplace" className="w-full sm:w-auto text-center" />
+              <Button label="Voir les voitures" variant="link" href="/marketplace" className="w-full sm:w-auto border border-primary text-primary hover:bg-primary-light rounded-button py-4 px-8 font-sans font-medium transition-all text-center justify-center" />
             </div>
           </div>
 
