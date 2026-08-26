@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export interface CarCardProps {
+  id?: string;
   name: string;
   rating: number;
   reviews: number;
@@ -11,6 +13,7 @@ export interface CarCardProps {
   price: number;
   imageSrc: string;
   isAvailable?: boolean;
+  href?: string;
 }
 
 export default function CarCard({
@@ -24,13 +27,16 @@ export default function CarCard({
   price,
   imageSrc,
   isAvailable = true,
+  href,
 }: CarCardProps) {
-  return (
-    <div className={`relative w-full max-w-[300px] h-[405px] rounded-card bg-white shadow-card flex flex-col overflow-hidden transition-all duration-300 border ${
-      isAvailable 
-        ? "hover:scale-[1.02] border-transparent hover:border-gray-200 cursor-pointer" 
-        : "opacity-50 border-gray-150"
-    }`}>
+  const cardClassName = `relative w-full max-w-[300px] h-[405px] rounded-card bg-white shadow-card flex flex-col overflow-hidden transition-all duration-300 border border-gray-100 ${
+    isAvailable 
+      ? "hover:scale-[1.02] hover:border-gray-300 cursor-pointer" 
+      : "opacity-50 border-gray-200"
+  }`;
+
+  const innerContent = (
+    <>
       {/* Diagonal Corner Ribbon Badge */}
       <div className={`absolute top-[16px] right-[-30px] w-[110px] py-0.5 text-[8px] font-sans font-extrabold uppercase tracking-widest text-center text-white rotate-45 z-20 border-b border-white/20 shadow-md ${
         isAvailable 
@@ -50,6 +56,7 @@ export default function CarCard({
             sizes="256px"
             className="object-contain"
             priority
+            unoptimized
           />
         </div>
       </div>
@@ -57,31 +64,11 @@ export default function CarCard({
       {/* Bottom Content Area */}
       <div className="flex flex-col gap-6 px-6 pb-6 pt-0 mt-3 flex-1 justify-between">
         
-        {/* Name & rating */}
+        {/* Name */}
         <div className="flex flex-col gap-3">
           <h3 className="font-sans font-medium text-base leading-[17px] text-black/70 text-left truncate">
             {name}
           </h3>
-          <div className="flex flex-row items-center gap-1.5 text-left">
-            {/* Star Icon */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="#EFBF14"
-              stroke="#EFBF14"
-              className="w-4 h-4 flex-shrink-0"
-            >
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            <span className="font-sans font-medium text-xs leading-[17px] text-black">
-              {rating.toFixed(1)}
-            </span>
-            <span className="font-sans font-normal text-xs leading-[17px] text-gray-400">
-              ({reviews.toLocaleString()} avis)
-            </span>
-          </div>
         </div>
 
         {/* Specifications Grid */}
@@ -198,8 +185,7 @@ export default function CarCard({
             </div>
           </div>
 
-          <button 
-            disabled={!isAvailable}
+          <div 
             className={`w-full h-10 transition-all font-sans font-medium text-sm leading-[17px] rounded-lg flex items-center justify-center gap-2 ${
               isAvailable 
                 ? "bg-primary hover:bg-blue-600 active:scale-95 text-white cursor-pointer" 
@@ -224,10 +210,24 @@ export default function CarCard({
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             )}
-          </button>
+          </div>
         </div>
 
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={cardClassName}>
+        {innerContent}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={cardClassName}>
+      {innerContent}
     </div>
   );
 }

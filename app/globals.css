@@ -42,10 +42,10 @@
   
   --radius-button: 8px;
   --radius-badge: 7.17px;
-  --radius-widget: 12px;
-  --radius-icon-container: 16px;
-  --radius-card: 16px;
-  --radius-testimonial-card: 24px;
+  --radius-widget: 0px;
+  --radius-icon-container: 0px;
+  --radius-card: 0px;
+  --radius-testimonial-card: 0px;
   --radius-download-badge: 10.14px;
   
   --shadow-widget: 0px 6px 12px 0px rgba(19, 94, 172, 0.12);
@@ -266,5 +266,100 @@ body {
   background: #1572D3;
 }
 
+.react-datepicker-popper {
+  z-index: 999999 !important;
+}
 
+/* Sliding drawers & fading overlays keyframes and classes */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
 
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.slide-in-drawer {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-out-drawer {
+  animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-in-drawer-left {
+  animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-out-drawer-left {
+  animation: slideOutLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-in-overlay {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.fade-out-overlay {
+  animation: fadeOut 0.25s ease-out forwards;
+}
+
+/* Owner Dashboard Squared Corner Override (Excluding rounded-full circles & toggle knobs) */
+.owner-dashboard-root *:not(.rounded-full) {
+  border-radius: 0px !important;
+}
+
+.owner-dashboard-root .rounded-full::after {
+  border-radius: 9999px !important;
+}
+
+/* Keep React Hot Toast checkmarks/icons/circles rounded */
+.owner-dashboard-root [role="status"] div,
+.owner-dashboard-root [role="alert"] div {
+  border-radius: 9999px !important;
+}

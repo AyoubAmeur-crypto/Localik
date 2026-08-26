@@ -105,7 +105,7 @@ export default function Navbar() {
             label="Espace Propriétaire"
             variant="primary"
             size="md"
-            href="#"
+            href="/espace-proprietaire"
             className="px-6 py-3 text-sm font-sans"
           />
         </div>
@@ -159,7 +159,7 @@ export default function Navbar() {
                 label="Espace Propriétaire"
                 variant="primary"
                 size="md"
-                href="#"
+                href="/espace-proprietaire"
                 className="w-full py-3"
               />
             </div>

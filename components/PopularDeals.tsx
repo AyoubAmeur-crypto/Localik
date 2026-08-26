@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
+import { getCarsPaginated } from "@/lib/db-actions";
 import CategoryBadge from "./CategoryBadge";
 import CarCard, { CarCardProps } from "./CarCard";
 import { useGSAP } from "@gsap/react";
@@ -80,8 +81,36 @@ const popularCars: (CarCardProps & { id: string })[] = [
   },
 ];
 
-export default function PopularDeals() {
+interface PopularDealsProps {
+  initialCars?: (CarCardProps & { id: string })[];
+  initialHasMore?: boolean;
+}
+
+export default function PopularDeals({ initialCars = [], initialHasMore = false }: PopularDealsProps) {
   const containerRef = useRef<HTMLElement>(null);
+  const [carsList, setCarsList] = useState(initialCars);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const result = await getCarsPaginated(page + 1, 8, { isAvailable: true });
+      if (result.success && result.cars) {
+        setCarsList((prev) => [...prev, ...result.cars]);
+        setPage((prev) => prev + 1);
+        setHasMore(result.hasMore);
+      }
+    } catch (error) {
+      console.error("Failed to load more cars:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const displayCars = carsList.length > 0 ? carsList : popularCars;
 
   useGSAP(() => {
     // Animate the header text sliding up
@@ -148,39 +177,47 @@ export default function PopularDeals() {
 
         {/* Responsive Cards Layout */}
         <div className="popular-animate-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 justify-items-center items-stretch gap-6 xl:gap-8 w-full mb-16">
-          {popularCars.map((car, index) => (
+          {displayCars.map((car, index) => (
             <div
               key={car.id}
               className={`w-full flex justify-center ${
-                index === popularCars.length - 1
+                index === displayCars.length - 1
                   ? "sm:col-span-2 sm:justify-self-center lg:col-span-1 lg:justify-self-auto xl:col-span-1 xl:justify-self-auto"
                   : ""
               }`}
             >
-              <CarCard {...car} />
+              <CarCard {...car} href={`/marketplace/voitures/${car.id}`} />
             </div>
           ))}
         </div>
 
         {/* Show all vehicles outline button */}
-        <button className="popular-animate-btn flex flex-row items-center justify-center gap-2 h-12 w-[216px] rounded-lg border border-border-card text-[#4E4E4E] hover:text-black hover:border-gray-400 hover:bg-gray-50 active:scale-95 transition-all font-sans font-medium text-sm leading-[17px] cursor-pointer">
-          <span>Voir tous les véhicules</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-4 h-4"
+        {hasMore && (
+          <button 
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="popular-animate-btn flex flex-row items-center justify-center gap-2 h-12 w-[216px] rounded-lg border border-border-card text-[#4E4E4E] hover:text-black hover:border-gray-400 hover:bg-gray-50 active:scale-95 transition-all font-sans font-medium text-sm leading-[17px] cursor-pointer disabled:opacity-50"
           >
-            <line x1="5" x2="19" y1="12" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </button>
+            <span>{loadingMore ? "Chargement..." : "Voir plus de véhicules"}</span>
+            {!loadingMore && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-4 h-4"
+              >
+                <line x1="12" x2="12" y1="5" y2="19" />
+                <polyline points="19 12 12 19 5 12" />
+              </svg>
+            )}
+          </button>
+        )}
 
       </div>
     </section>
