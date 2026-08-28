@@ -41,6 +41,10 @@ import {
   X,
   DollarSign,
   TrendingUp,
+  User,
+  Mail,
+  Fuel,
+  Zap,
 } from "lucide-react";
 
 import {
@@ -55,6 +59,7 @@ import {
   deleteUserAction,
   getCurrentUserEmail,
   updateSelfAction,
+  getCurrentUserAction,
   getBookingsAction,
   confirmBookingAction,
   returnCarAction,
@@ -99,6 +104,10 @@ interface CarType {
 interface UserType {
   id: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  username?: string;
 }
 
 interface CustomFilterSelectProps {
@@ -167,9 +176,17 @@ function DashboardPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const mainScrollRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"dashboard" | "vehicles" | "collaborators" | "requests" | "rented" | "settings">("dashboard");
   const [currentUserEmail, setCurrentUserEmail] = useState("");
+  const [currentUserDetails, setCurrentUserDetails] = useState<{
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    username: string;
+  } | null>(null);
   const [allCars, setAllCars] = useState<CarType[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [clearedWarningIds, setClearedWarningIds] = useState<string[]>([]);
@@ -240,6 +257,10 @@ function DashboardPageContent() {
   const [settingsEmail, setSettingsEmail] = useState("");
   const [settingsPassword, setSettingsPassword] = useState("");
   const [settingsConfirmPassword, setSettingsConfirmPassword] = useState("");
+  const [settingsFirstName, setSettingsFirstName] = useState("");
+  const [settingsLastName, setSettingsLastName] = useState("");
+  const [settingsPhone, setSettingsPhone] = useState("");
+  const [settingsUsername, setSettingsUsername] = useState("");
   const [submittingSettings, setSubmittingSettings] = useState(false);
 
   // Slide-in drawer requests details inspect state
@@ -360,6 +381,10 @@ function DashboardPageContent() {
   // Collaborator Form State
   const [collabEmail, setCollabEmail] = useState("");
   const [collabPassword, setCollabPassword] = useState("");
+  const [collabFirstName, setCollabFirstName] = useState("");
+  const [collabLastName, setCollabLastName] = useState("");
+  const [collabPhone, setCollabPhone] = useState("");
+  const [collabUsername, setCollabUsername] = useState("");
   const [submittingCollab, setSubmittingCollab] = useState(false);
 
   // Collaborator Deletion Captcha State
@@ -431,6 +456,21 @@ function DashboardPageContent() {
     }
   }, []);
 
+  // Scroll main container to top when page, filters, or tabs update
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTop = 0;
+    }
+  }, [activeTab, currentPage, requestsPage, rentedPage]);
+
+  // Sync active tab with URL query parameter
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["dashboard", "vehicles", "collaborators", "requests", "rented", "settings"].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+  }, [searchParams]);
+
   // Check auth and load initial collaborators, bookings & cars
   useEffect(() => {
     async function initDashboard() {
@@ -440,9 +480,27 @@ function DashboardPageContent() {
         return;
       }
       
-      const email = await getCurrentUserEmail();
-      setCurrentUserEmail(email || "admin");
-      setSettingsEmail(email || "admin");
+      const userDetails = await getCurrentUserAction();
+      if (userDetails) {
+        const emailVal = userDetails.email || "admin";
+        setCurrentUserEmail(emailVal);
+        setCurrentUserDetails({
+          email: emailVal,
+          firstName: userDetails.firstName || "",
+          lastName: userDetails.lastName || "",
+          phone: userDetails.phone || "",
+          username: userDetails.username || "",
+        });
+        setSettingsEmail(emailVal);
+        setSettingsFirstName(userDetails.firstName || "");
+        setSettingsLastName(userDetails.lastName || "");
+        setSettingsPhone(userDetails.phone || "");
+        setSettingsUsername(userDetails.username || "");
+      } else {
+        const email = await getCurrentUserEmail();
+        setCurrentUserEmail(email || "admin");
+        setSettingsEmail(email || "admin");
+      }
 
       const fetchedUsers = await getUsersAction();
       setUsers(fetchedUsers);
@@ -587,6 +645,24 @@ function DashboardPageContent() {
     }
     setUsers(fetchedUsers);
     setAllCars(fetchedAllCars);
+
+    const userDetails = await getCurrentUserAction();
+    if (userDetails) {
+      const emailVal = userDetails.email || "admin";
+      setCurrentUserEmail(emailVal);
+      setCurrentUserDetails({
+        email: emailVal,
+        firstName: userDetails.firstName || "",
+        lastName: userDetails.lastName || "",
+        phone: userDetails.phone || "",
+        username: userDetails.username || "",
+      });
+      setSettingsEmail(emailVal);
+      setSettingsFirstName(userDetails.firstName || "");
+      setSettingsLastName(userDetails.lastName || "");
+      setSettingsPhone(userDetails.phone || "");
+      setSettingsUsername(userDetails.username || "");
+    }
   }
 
   async function loadBookings() {
@@ -852,7 +928,14 @@ function DashboardPageContent() {
 
     setSubmittingSettings(true);
     try {
-      const res = await updateSelfAction(settingsEmail, settingsPassword || undefined);
+      const res = await updateSelfAction(
+        settingsEmail,
+        settingsPassword || undefined,
+        settingsFirstName,
+        settingsLastName,
+        settingsPhone,
+        settingsUsername
+      );
       if (res.success) {
         toast.success("Paramètres mis à jour avec succès!");
         setCurrentUserEmail(settingsEmail);
@@ -874,7 +957,7 @@ function DashboardPageContent() {
     e.preventDefault();
 
     if (!collabEmail || !collabPassword) {
-      toast.error("Veuillez remplir tous les champs.");
+      toast.error("Veuillez remplir tous les champs obligatoires (Email et Mot de passe).");
       return;
     }
 
@@ -886,11 +969,22 @@ function DashboardPageContent() {
     setSubmittingCollab(true);
 
     try {
-      const res = await createUserAction(collabEmail, collabPassword);
+      const res = await createUserAction(
+        collabEmail,
+        collabPassword,
+        collabFirstName,
+        collabLastName,
+        collabPhone,
+        collabUsername
+      );
       if (res.success) {
         toast.success("Nouveau collaborateur ajouté!");
         setCollabEmail("");
         setCollabPassword("");
+        setCollabFirstName("");
+        setCollabLastName("");
+        setCollabPhone("");
+        setCollabUsername("");
         await loadData();
       } else {
         toast.error(res.error || "Erreur lors de l'ajout.");
@@ -1377,7 +1471,7 @@ function DashboardPageContent() {
       )}
 
       {/* Main Content Area Wrapper */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto">
+      <div ref={mainScrollRef} className="flex-1 flex flex-col h-screen overflow-y-auto">
         
         {/* Top Navbar */}
         <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm flex items-center justify-between px-4 md:px-8 flex-shrink-0 font-sans">
@@ -1628,15 +1722,16 @@ function DashboardPageContent() {
             {/* Greeting Header */}
             <div className="flex flex-col gap-1 text-left mb-1">
               <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">
-                Bonjour, {currentUserEmail ? currentUserEmail.split("@")[0].charAt(0).toUpperCase() + currentUserEmail.split("@")[0].slice(1) : "Propriétaire"} ! 👋
+                Bonjour, {currentUserDetails?.firstName ? currentUserDetails.firstName.charAt(0).toUpperCase() + currentUserDetails.firstName.slice(1) : currentUserDetails?.username ? currentUserDetails.username.charAt(0).toUpperCase() + currentUserDetails.username.slice(1) : currentUserEmail ? currentUserEmail.split("@")[0].charAt(0).toUpperCase() + currentUserEmail.split("@")[0].slice(1) : "Propriétaire"} ! 👋
               </h1>
               <p className="text-gray-500 text-xs font-semibold">
                 Ravi de vous revoir. Voici un aperçu de l'activité et des performances de votre parc automobile aujourd'hui.
               </p>
             </div>
 
+
             {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
               {/* Card 1: Revenue */}
               <div className="bg-white p-4 rounded-none shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between gap-4">
                 <div className="flex items-center justify-between">
@@ -1713,6 +1808,27 @@ function DashboardPageContent() {
                     className="text-[11px] text-primary hover:underline font-bold mt-1 block text-left cursor-pointer"
                   >
                     Suivre les véhicules loués &rarr;
+                  </button>
+                </div>
+              </div>
+
+              {/* Card 5: Team Collaborators */}
+              <div className="bg-white p-4 rounded-none shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Collaborateurs</span>
+                  <div className="p-2 rounded-none bg-blue-50 text-primary">
+                    <Users className="w-5 h-5" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-gray-880 tracking-tight">
+                    {users.length} {users.length > 1 ? "Comptes" : "Compte"}
+                  </h3>
+                  <button
+                    onClick={() => setActiveTab("collaborators")}
+                    className="text-[11px] text-primary hover:underline font-bold mt-1 block text-left cursor-pointer"
+                  >
+                    Gérer l'équipe &rarr;
                   </button>
                 </div>
               </div>
@@ -1866,6 +1982,100 @@ function DashboardPageContent() {
                 </div>
               </div>
             </div>
+
+            {/* Redesigned Premium Bottom Quick Access Widget */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm w-full text-left mt-6">
+              <div className="mb-6">
+                <h3 className="text-base font-extrabold text-gray-900">Raccourcis & Accès Rapide</h3>
+                <p className="text-xs text-gray-500 mt-1">Accédez directement aux différentes sections de gestion et configuration de votre espace.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {/* Shortcut 1: Settings */}
+                <button
+                  onClick={() => setActiveTab("settings")}
+                  className="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-primary/40 hover:shadow-md rounded-2xl p-5 text-left transition-all group flex flex-col justify-between min-h-[160px] cursor-pointer"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Settings className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-gray-900 group-hover:text-primary transition-colors">Paramètres du Compte</h4>
+                      <p className="text-[11px] text-gray-400 font-semibold mt-1 leading-relaxed">
+                        Mettre à jour vos coordonnées, mot de passe et identifiants de connexion.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-3">
+                    Aller aux paramètres &rarr;
+                  </span>
+                </button>
+
+                {/* Shortcut 2: Collaborators */}
+                <button
+                  onClick={() => setActiveTab("collaborators")}
+                  className="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-primary/40 hover:shadow-md rounded-2xl p-5 text-left transition-all group flex flex-col justify-between min-h-[160px] cursor-pointer"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-550 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-gray-900 group-hover:text-primary transition-colors">Gérer les Collaborateurs</h4>
+                      <p className="text-[11px] text-gray-400 font-semibold mt-1 leading-relaxed">
+                        Créer un nouveau compte d'accès administrateur pour vos collaborateurs.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-3">
+                    Gérer l'équipe &rarr;
+                  </span>
+                </button>
+
+                {/* Shortcut 3: Vehicles */}
+                <button
+                  onClick={() => setActiveTab("vehicles")}
+                  className="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-primary/40 hover:shadow-md rounded-2xl p-5 text-left transition-all group flex flex-col justify-between min-h-[160px] cursor-pointer"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Car className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-gray-900 group-hover:text-primary transition-colors">Flotte de Véhicules</h4>
+                      <p className="text-[11px] text-gray-400 font-semibold mt-1 leading-relaxed">
+                        Ajouter de nouveaux véhicules ou mettre à jour la disponibilité en ligne.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-3">
+                    Gérer la flotte &rarr;
+                  </span>
+                </button>
+
+                {/* Shortcut 4: Requests */}
+                <button
+                  onClick={() => setActiveTab("requests")}
+                  className="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-primary/40 hover:shadow-md rounded-2xl p-5 text-left transition-all group flex flex-col justify-between min-h-[160px] cursor-pointer"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-550 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-gray-900 group-hover:text-primary transition-colors">Demandes reçues</h4>
+                      <p className="text-[11px] text-gray-400 font-semibold mt-1 leading-relaxed">
+                        Consulter les dossiers de location en attente et valider les réservations.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-3">
+                    Voir les demandes &rarr;
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1982,13 +2192,15 @@ function DashboardPageContent() {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full select-none">
                     {cars.map((car) => (
-                      <div key={car.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow relative">
-                        
+                      <div
+                        key={car.id}
+                        className="bg-white rounded-2xl border border-gray-200 hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative group"
+                      >
                         {/* Corner availability badge indicator */}
-                        <div className={`absolute top-4 left-4 z-10 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-white shadow-sm ${
-                          car.isAvailable ? "bg-[#1572D3]" : "bg-red-500"
+                        <div className={`absolute top-4 left-4 z-10 px-2.5 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider text-white shadow-sm ${
+                          car.isAvailable ? "bg-primary" : "bg-red-500"
                         }`}>
                           {car.isAvailable ? "Disponible" : "Indisponible"}
                         </div>
@@ -1996,13 +2208,11 @@ function DashboardPageContent() {
                         {/* Image Area */}
                         <div className="relative w-full h-[160px] bg-gray-50/50 flex items-center justify-center p-4">
                           {car.imageSrc ? (
-                            <div className="relative w-full h-full">
-                              <img
-                                src={car.imageSrc}
-                                alt={car.name}
-                                className="w-full h-full object-contain"
-                              />
-                            </div>
+                            <img
+                              src={car.imageSrc}
+                              alt={car.name}
+                              className="w-full h-full object-contain group-hover:scale-103 transition-transform duration-300"
+                            />
                           ) : (
                             <span className="text-xs text-gray-400">Aucune image</span>
                           )}
@@ -2011,18 +2221,18 @@ function DashboardPageContent() {
                         {/* Details Area */}
                         <div className="p-5 flex-1 flex flex-col justify-between">
                           <div className="mb-4">
-                            <h3 className="font-semibold text-base text-gray-900 truncate mb-1" title={car.name}>
+                            <h3 className="font-extrabold text-base text-gray-900 truncate mb-1" title={car.name}>
                               {car.name}
                             </h3>
                             
                             {/* Location indicator */}
-                            <div className="flex items-center gap-1 text-[11px] font-bold text-primary mb-3">
-                              <Globe className="w-3.5 h-3.5" />
+                            <div className="flex items-center gap-1.5 text-xs text-primary font-bold mb-3">
+                              <MapPin className="w-3.5 h-3.5" />
                               <span>{car.location}</span>
                             </div>
                             
                             {/* Specs grid */}
-                            <div className="grid grid-cols-2 gap-y-2 gap-x-1 text-xs text-gray-505 border-t border-b border-gray-100 py-3">
+                            <div className="grid grid-cols-2 gap-y-2.5 gap-x-1 text-xs text-gray-505 border-t border-b border-gray-100 py-3 font-semibold">
                               <div className="flex items-center gap-1.5 truncate">
                                 <Users className="w-3.5 h-3.5 text-gray-400" />
                                 <span>{car.passengers} places</span>
@@ -2032,12 +2242,12 @@ function DashboardPageContent() {
                                 <span>{car.transmission}</span>
                               </div>
                               <div className="flex items-center gap-1.5 truncate">
-                                <Snowflake className="w-3.5 h-3.5 text-gray-400" />
-                                <span>{car.airConditioning ? "Climatisé" : "Non Clim"}</span>
+                                <Fuel className="w-3.5 h-3.5 text-gray-400" />
+                                <span>{car.fuelType}</span>
                               </div>
                               <div className="flex items-center gap-1.5 truncate">
-                                <DoorClosed className="w-3.5 h-3.5 text-gray-400" />
-                                <span>{car.doors} portes</span>
+                                <Snowflake className="w-3.5 h-3.5 text-gray-400" />
+                                <span>{car.airConditioning ? "Clim" : "Non Clim"}</span>
                               </div>
                             </div>
                           </div>
@@ -2046,16 +2256,16 @@ function DashboardPageContent() {
                           <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                               <div>
-                                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Prix de location</span>
+                                <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">Tarif journalier</span>
                                 <div className="flex items-baseline">
-                                  <span className="text-base font-bold text-gray-900">{car.price} DH</span>
-                                  <span className="text-xs text-gray-400">/jour</span>
+                                  <span className="text-base font-black text-gray-900">{car.price} DH</span>
+                                  <span className="text-xs text-gray-400 font-semibold">/jour</span>
                                 </div>
                               </div>
                               
                               {/* Availability Toggle Switch */}
                               <div className="flex flex-col items-end">
-                                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Badge en ligne</span>
+                                <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mb-1">Badge en ligne</span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                   <input 
                                     type="checkbox" 
@@ -2080,7 +2290,7 @@ function DashboardPageContent() {
                               
                               <button
                                 onClick={() => handleDeleteCar(car.id, car.name)}
-                                className="py-2 px-3 border border-gray-200 hover:border-red-200 text-gray-600 hover:text-red-655 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer bg-white"
+                                className="py-2 px-3 border border-gray-200 text-primary hover:bg-primary hover:text-white hover:border-primary rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer bg-white"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                                 <span>Supprimer</span>
@@ -2088,7 +2298,6 @@ function DashboardPageContent() {
                             </div>
                           </div>
                         </div>
-
                       </div>
                     ))}
                   </div>
@@ -2252,32 +2461,115 @@ function DashboardPageContent() {
 
         {/* Tab 2: Collaborators */}
         {activeTab === "collaborators" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+          <div className="flex flex-col gap-8 w-full text-left">
             
-            {/* Left side Form to Add User */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm h-fit">
+            {/* Form to Add User */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm w-full">
               <h2 className="text-lg font-bold text-gray-900 mb-2">Ajouter un Collaborateur</h2>
               <p className="text-xs text-gray-500 mb-6 font-medium">Chaque collaborateur dispose de privilèges super-administrateur complets.</p>
               
-              <form onSubmit={handleCollabSubmit} className="space-y-4">
+              <form onSubmit={handleCollabSubmit} className="space-y-4 text-left">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="collabFirstName" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      Prénom
+                    </label>
+                    <input
+                      id="collabFirstName"
+                      type="text"
+                      value={collabFirstName}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCollabFirstName(val);
+                        // Auto-generate username: remove accents and non-alphanumeric chars
+                        const generated = (val + collabLastName)
+                          .toLowerCase()
+                          .normalize("NFD")
+                          .replace(/[\u0300-\u036f]/g, "")
+                          .replace(/[^a-z0-9]/g, "");
+                        setCollabUsername(generated);
+                      }}
+                      placeholder="ex: Jean"
+                      disabled={submittingCollab}
+                      className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400 font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="collabLastName" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      Nom
+                    </label>
+                    <input
+                      id="collabLastName"
+                      type="text"
+                      value={collabLastName}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCollabLastName(val);
+                        // Auto-generate username: remove accents and non-alphanumeric chars
+                        const generated = (collabFirstName + val)
+                          .toLowerCase()
+                          .normalize("NFD")
+                          .replace(/[\u0300-\u036f]/g, "")
+                          .replace(/[^a-z0-9]/g, "");
+                        setCollabUsername(generated);
+                      }}
+                      placeholder="ex: Dupont"
+                      disabled={submittingCollab}
+                      className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400 font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="collabUsername" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      Pseudo / Identifiant (Généré)
+                    </label>
+                    <input
+                      id="collabUsername"
+                      type="text"
+                      value={collabUsername}
+                      onChange={(e) => setCollabUsername(e.target.value)}
+                      placeholder="ex: jeandupont"
+                      disabled={submittingCollab}
+                      className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400 font-semibold bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="collabPhone" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      Téléphone
+                    </label>
+                    <input
+                      id="collabPhone"
+                      type="tel"
+                      value={collabPhone}
+                      onChange={(e) => setCollabPhone(e.target.value)}
+                      placeholder="ex: 0612345678"
+                      disabled={submittingCollab}
+                      className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400 font-semibold"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label htmlFor="email" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    Email / Identifiant
+                    Adresse Email (Obligatoire)
                   </label>
                   <input
                     id="email"
-                    type="text"
+                    type="email"
                     value={collabEmail}
                     onChange={(e) => setCollabEmail(e.target.value)}
                     placeholder="email@localik.com"
                     disabled={submittingCollab}
-                    className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400 font-semibold"
+                    required
                   />
                 </div>
 
                 <div>
                   <label htmlFor="pass" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    Mot de passe
+                    Mot de passe (Obligatoire)
                   </label>
                   <input
                     id="pass"
@@ -2286,7 +2578,8 @@ function DashboardPageContent() {
                     onChange={(e) => setCollabPassword(e.target.value)}
                     placeholder="••••••••"
                     disabled={submittingCollab}
-                    className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-200 outline-none text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-gray-800 placeholder-gray-400"
+                    required
                   />
                 </div>
 
@@ -2307,60 +2600,116 @@ function DashboardPageContent() {
               </form>
             </div>
 
-            {/* Right side Table to view Users */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm h-fit lg:col-span-2">
+            {/* List to view Users (flex col cards) */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm w-full">
               <h2 className="text-lg font-bold text-gray-900 mb-2">Comptes d'accès</h2>
               <p className="text-xs text-gray-500 mb-6 font-medium">Liste des utilisateurs autorisés. Chaque utilisateur peut supprimer d'autres collaborateurs (sauf son propre compte en cours).</p>
               
-              <div className="overflow-x-auto rounded-lg border border-gray-100">
-                <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
-                  <thead className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    <tr>
-                      <th className="px-6 py-4">Utilisateur</th>
-                      <th className="px-6 py-4">Rôle</th>
-                      <th className="px-6 py-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 text-gray-700 bg-white font-medium">
-                    {users.map((u) => {
-                      const isSelf = currentUserEmail === u.email;
-                      return (
-                        <tr key={u.id} className="hover:bg-gray-50/50">
-                          <td className="px-6 py-4 flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-blue-50 text-primary flex items-center justify-center font-extrabold text-xs uppercase border border-blue-100">
-                              {u.email.slice(0, 2)}
-                            </div>
-                            <span className="font-semibold text-gray-800">{u.email}</span>
-                            {isSelf && (
-                              <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 font-bold border border-gray-200">Moi</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-50 text-primary border border-blue-100">
-                              Super Admin
+              <div className="flex flex-col gap-4">
+                {users.map((u) => {
+                  const isSelf = currentUserEmail === u.email;
+                  return (
+                    <div
+                      key={u.id}
+                      className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-all hover:shadow-md hover:border-primary/45 group w-full"
+                    >
+                      {/* Profile & Initials Avatar */}
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="h-12 w-12 rounded-2xl bg-blue-50 text-primary flex items-center justify-center font-extrabold text-sm uppercase border border-blue-100 shrink-0 shadow-2xs group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
+                          {u.firstName && u.lastName ? `${u.firstName[0]}${u.lastName[0]}` : u.email.slice(0, 2)}
+                        </div>
+                        
+                        <div className="flex flex-col min-w-0 text-left">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-extrabold text-base text-gray-900 truncate group-hover:text-primary transition-colors leading-tight">
+                              {u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : "Collaborateur"}
                             </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-4">
-                              <span className="flex items-center gap-1.5 text-xs text-green-600 font-semibold">
-                                <span className="h-2 w-2 rounded-full bg-green-500"></span> Actif
+                            {u.username && (
+                              <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200/50">@{u.username}</span>
+                            )}
+                            {isSelf && (
+                              <span className="text-[10px] px-2 py-0.5 bg-primary/10 rounded-lg text-primary font-bold border border-primary/20 shrink-0">Moi</span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500 mt-1 font-semibold flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5 text-gray-400" />
+                            <span>{u.email}</span>
+                          </span>
+                          {u.phone && (
+                            <span className="text-xs text-gray-500 mt-1 font-semibold flex items-center gap-1">
+                              <Phone className="w-3.5 h-3.5 text-gray-400" />
+                              <span>{u.phone}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Middle: Role, Created Date & Status */}
+                      <div className="flex flex-row flex-wrap sm:flex-nowrap items-center gap-6 justify-between lg:justify-start border-t border-b lg:border-none border-gray-100 py-3 lg:py-0 w-full lg:w-auto">
+                        {/* Role */}
+                        <div className="flex flex-col justify-center min-w-[120px]">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">Rôle système</span>
+                          <div className="mt-1">
+                            {(u.username === "admin" || u.email === "admin") ? (
+                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+                                Propriétaire
                               </span>
-                              {!isSelf && (
-                                <button
-                                  onClick={() => openDeleteUserModal(u)}
-                                  className="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded hover:bg-red-50 cursor-pointer border border-transparent hover:border-red-100"
-                                  title="Supprimer ce collaborateur"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-blue-50 text-primary border border-blue-100">
+                                Collaborateur
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Date Joined */}
+                        <div className="flex flex-col justify-center min-w-[140px]">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">Date d'inscription</span>
+                          <span className="text-xs font-semibold text-gray-700 mt-1.5">
+                            {u.createdAt ? new Date(u.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "Non spécifiée"}
+                          </span>
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex flex-col justify-center min-w-[80px]">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">Statut</span>
+                          <span className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold mt-1.5">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Actif
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Right: Actions */}
+                      <div className="flex items-center justify-between sm:justify-end gap-2 w-full lg:w-auto lg:flex-shrink-0">
+                        <a
+                          href={`mailto:${u.email}`}
+                          className="p-2 border border-gray-200 hover:border-primary text-gray-500 hover:text-primary rounded-xl transition-colors cursor-pointer bg-white"
+                          title="Envoyer un email"
+                        >
+                          <Mail className="w-4 h-4" />
+                        </a>
+                        {u.phone && (
+                          <a
+                            href={`tel:${u.phone}`}
+                            className="p-2 border border-gray-200 hover:border-primary text-gray-500 hover:text-primary rounded-xl transition-colors cursor-pointer bg-white"
+                            title="Appeler"
+                          >
+                            <Phone className="w-4 h-4" />
+                          </a>
+                        )}
+                        {!isSelf && (
+                          <button
+                            onClick={() => openDeleteUserModal(u)}
+                            className="p-2 border border-gray-200 hover:border-red-250 text-gray-400 hover:text-red-600 rounded-xl transition-colors cursor-pointer bg-white"
+                            title="Supprimer ce collaborateur"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -3132,7 +3481,7 @@ function DashboardPageContent() {
 
         {/* Tab 6: Settings (Paramètres) */}
         {activeTab === "settings" && (
-          <div className="flex flex-col gap-6 w-full animate-none text-left font-sans max-w-2xl">
+          <div className="flex flex-col gap-6 w-full animate-none text-left font-sans">
             <div>
               <h2 className="text-xl font-bold text-gray-900">Paramètres du compte</h2>
               <p className="text-sm text-gray-500 mt-1">
@@ -3140,7 +3489,135 @@ function DashboardPageContent() {
               </p>
             </div>
 
+            {/* Aperçu du profil (Preview) */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
+                <span>Aperçu des informations actuelles</span>
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Nom Complet */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary flex-shrink-0">
+                    <User className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Nom Complet</span>
+                    <span className="text-sm font-bold text-gray-800 truncate">
+                      {currentUserDetails?.firstName || currentUserDetails?.lastName
+                        ? `${currentUserDetails.firstName} ${currentUserDetails.lastName}`
+                        : "Non renseigné"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pseudo / Identifiant */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary flex-shrink-0">
+                    <UserCheck className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Identifiant / Pseudo</span>
+                    <span className="text-sm font-bold text-gray-800 truncate">
+                      {currentUserDetails?.username ? `@${currentUserDetails.username}` : "Non renseigné"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Adresse Email */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary flex-shrink-0">
+                    <Mail className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Adresse Email</span>
+                    <span className="text-sm font-bold text-gray-800 truncate">
+                      {currentUserDetails?.email || "Non renseigné"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Téléphone */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary flex-shrink-0">
+                    <Phone className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Téléphone</span>
+                    <span className="text-sm font-bold text-gray-800 truncate">
+                      {currentUserDetails?.phone || "Non renseigné"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mot de passe (Masqué) */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 md:col-span-2">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary flex-shrink-0">
+                    <Lock className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Mot de passe</span>
+                    <span className="text-sm font-bold text-gray-800 tracking-widest font-mono">••••••••</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Separator / Subtitle for edits */}
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-1">Modifier vos informations</h3>
+              <p className="text-xs text-gray-500">Remplissez les champs ci-dessous pour mettre à jour vos coordonnées.</p>
+            </div>
+
             <form onSubmit={handleUpdateSettings} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-5">
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Prénom</label>
+                  <input
+                    type="text"
+                    value={settingsFirstName}
+                    onChange={(e) => setSettingsFirstName(e.target.value)}
+                    placeholder="Prénom"
+                    className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder-gray-400 text-gray-800"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Nom</label>
+                  <input
+                    type="text"
+                    value={settingsLastName}
+                    onChange={(e) => setSettingsLastName(e.target.value)}
+                    placeholder="Nom"
+                    className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder-gray-400 text-gray-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Identifiant / Pseudo</label>
+                  <input
+                    type="text"
+                    value={settingsUsername}
+                    onChange={(e) => setSettingsUsername(e.target.value)}
+                    placeholder="ex: admin"
+                    className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder-gray-400 text-gray-800"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Téléphone</label>
+                  <input
+                    type="tel"
+                    value={settingsPhone}
+                    onChange={(e) => setSettingsPhone(e.target.value)}
+                    placeholder="ex: 0612345678"
+                    className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder-gray-400 text-gray-800"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Adresse Email</label>
                 <input
