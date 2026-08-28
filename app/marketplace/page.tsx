@@ -873,8 +873,8 @@ function MarketplaceContent() {
           <div className="flex flex-col gap-4">
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="w-full bg-white border border-gray-200 rounded-none p-4 flex flex-col sm:flex-row items-center gap-5 shadow-sm animate-pulse h-36">
-                  <div className="w-full sm:w-44 h-28 bg-gray-100 rounded-none" />
+                <div key={i} className="w-full max-w-[320px] mx-auto sm:max-w-none sm:mx-0 bg-white border border-gray-200 rounded-none p-4 flex flex-col sm:flex-row items-center gap-5 shadow-sm animate-pulse h-auto sm:h-36">
+                  <div className="w-full sm:w-44 h-28 bg-gray-100 rounded-none flex-shrink-0" />
                   <div className="flex-1 space-y-3.5 py-1 text-left w-full">
                     <div className="h-4 bg-gray-100 rounded w-1/3" />
                     <div className="h-3 bg-gray-100 rounded w-1/5" />
@@ -908,7 +908,7 @@ function MarketplaceContent() {
                     key={car.id}
                     onMouseEnter={() => setHoveredCarId(car.id)}
                     onMouseLeave={() => setHoveredCarId(null)}
-                    className={`w-full bg-white border rounded-none p-4 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-5 cursor-pointer relative ${
+                    className={`w-full max-w-[320px] mx-auto sm:max-w-none sm:mx-0 bg-white border rounded-none p-4 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-5 cursor-pointer relative ${
                       isHovered ? "border-primary ring-1 ring-primary/10" : "border-gray-200"
                     }`}
                   >

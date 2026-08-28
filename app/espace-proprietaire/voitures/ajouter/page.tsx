@@ -49,7 +49,7 @@ export default function AjouterVoiturePage() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
-  const [pendingTarget, setPendingTarget] = useState("/espace-proprietaire");
+  const [pendingTarget, setPendingTarget] = useState("/espace-proprietaire?tab=vehicles");
 
   // Dynamic isDirty check comparing current state to initial default values
   const checkIsDirty = () => {
@@ -68,7 +68,7 @@ export default function AjouterVoiturePage() {
     return false;
   };
 
-  const handleTryLeave = (target: string = "/espace-proprietaire") => {
+  const handleTryLeave = (target: string = "/espace-proprietaire?tab=vehicles") => {
     if (checkIsDirty()) {
       setPendingTarget(target);
       setShowUnsavedModal(true);
@@ -260,7 +260,7 @@ export default function AjouterVoiturePage() {
       const res = await createCar(carData);
       if (res.success) {
         toast.success("Véhicule ajouté avec succès!", { id: "upload-toast" });
-        router.push(thenNavigate ? pendingTarget : "/espace-proprietaire");
+        router.push(thenNavigate ? pendingTarget : "/espace-proprietaire?tab=vehicles");
         router.refresh();
       } else {
         toast.error(res.error || "Erreur lors de l'ajout.", { id: "upload-toast" });
@@ -796,7 +796,7 @@ export default function AjouterVoiturePage() {
               {/* Action Row */}
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <Link
-                  href="/espace-proprietaire"
+                  href="/espace-proprietaire?tab=vehicles"
                   className="py-3 px-6 bg-white border border-gray-200/40 hover:bg-gray-50 text-gray-700 font-semibold text-sm rounded-xl transition-all cursor-pointer"
                 >
                   Annuler

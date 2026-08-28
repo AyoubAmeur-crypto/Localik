@@ -131,11 +131,32 @@ export async function seedDatabase() {
   if (isSeeded) return;
   await connectToDatabase();
 
-  // 1. Seed admin user (admin / admin)
-  const adminExists = await User.findOne({ email: "admin" });
-  if (!adminExists) {
+  // 1. Seed admin user if no users exist in the database, or reset if old schema admin exists
+  const hasOldSchema = await User.findOne({
+    $or: [
+      { username: { $exists: false } },
+      { username: "" },
+      { firstName: { $exists: false } },
+      { firstName: "" }
+    ]
+  });
+
+  if (hasOldSchema) {
+    console.log("Old schema users detected. Wiping users to reset with new schema...");
+    await User.deleteMany({});
+  }
+
+  const userCount = await User.countDocuments();
+  if (userCount === 0) {
     const hashedPassword = await bcrypt.hash("admin", 10);
-    await User.create({ email: "admin", password: hashedPassword });
+    await User.create({
+      email: "admin",
+      username: "admin",
+      password: hashedPassword,
+      firstName: "Admin",
+      lastName: "Localik",
+      phone: "0600000000"
+    });
     console.log("Admin user seeded.");
   }
 
@@ -156,7 +177,12 @@ export async function loginAction(emailOrUsername: string, password: string) {
     // Seed DB in case it hasn't run yet
     await seedDatabase();
 
-    const user = await User.findOne({ email: emailOrUsername });
+    const user = await User.findOne({
+      $or: [
+        { email: emailOrUsername },
+        { username: emailOrUsername }
+      ]
+    });
     if (!user) {
       return { success: false, error: "Identifiants invalides." };
     }
@@ -190,7 +216,35 @@ export async function getCurrentUserEmail() {
   return session ? session.email : null;
 }
 
-export async function updateSelfAction(email: string, password?: string) {
+export async function getCurrentUserAction() {
+  try {
+    const session = await getSession();
+    if (!session) return null;
+
+    await connectToDatabase();
+    const user = await User.findById(session.userId, { password: 0 }).lean();
+    if (!user) return null;
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName ?? "",
+      lastName: user.lastName ?? "",
+      phone: user.phone ?? "",
+      username: user.username ?? "",
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function updateSelfAction(
+  email: string,
+  password?: string,
+  firstName?: string,
+  lastName?: string,
+  phone?: string,
+  username?: string
+) {
   try {
     const session = await getSession();
     if (!session) {
@@ -212,6 +266,11 @@ export async function updateSelfAction(email: string, password?: string) {
     }
 
     user.email = email;
+    user.firstName = firstName ?? "";
+    user.lastName = lastName ?? "";
+    user.phone = phone ?? "";
+    user.username = username ?? "";
+
     if (password && password.trim() !== "") {
       user.password = await bcrypt.hash(password, 10);
     }
@@ -228,7 +287,14 @@ export async function updateSelfAction(email: string, password?: string) {
 }
 
 // 2. User/Collaborator Management (Admin only)
-export async function createUserAction(email: string, password: string) {
+export async function createUserAction(
+  email: string,
+  password: string,
+  firstName?: string,
+  lastName?: string,
+  phone?: string,
+  username?: string
+) {
   try {
     const session = await getSession();
     if (!session) {
@@ -243,7 +309,14 @@ export async function createUserAction(email: string, password: string) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ email, password: hashedPassword });
+    await User.create({
+      email,
+      password: hashedPassword,
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+      phone: phone ?? "",
+      username: username ?? "",
+    });
 
     return { success: true };
   } catch (error: any) {
@@ -263,6 +336,11 @@ export async function getUsersAction() {
     return users.map((u: any) => ({
       id: u._id.toString(),
       email: u.email,
+      firstName: u.firstName ?? "",
+      lastName: u.lastName ?? "",
+      phone: u.phone ?? "",
+      username: u.username ?? "",
+      createdAt: u.createdAt ? u.createdAt.toISOString() : null,
     }));
   } catch (error) {
     return [];
