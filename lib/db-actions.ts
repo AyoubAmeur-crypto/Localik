@@ -183,7 +183,7 @@ export async function loginAction(emailOrUsername: string, password: string) {
         { username: emailOrUsername }
       ]
     });
-    if (!user) {
+    if (!user || !user.password) {
       return { success: false, error: "Identifiants invalides." };
     }
 

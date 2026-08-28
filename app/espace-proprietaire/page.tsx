@@ -99,6 +99,7 @@ interface CarType {
   imageSrc: string;
   isAvailable: boolean;
   location: string;
+  fuelType?: string;
 }
 
 interface UserType {
@@ -108,6 +109,7 @@ interface UserType {
   lastName?: string;
   phone?: string;
   username?: string;
+  createdAt?: string | null;
 }
 
 interface CustomFilterSelectProps {
