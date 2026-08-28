@@ -925,12 +925,12 @@ function MarketplaceContent() {
                     </div>
 
                     {/* Middle: Details & Specs */}
-                    <div className="flex-grow flex flex-col items-start text-left min-w-0">
+                    <div className="w-full sm:w-auto flex-grow flex flex-col items-start text-left min-w-0">
                       <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                         {car.location}, Maroc
                       </span>
-                      <h3 className="text-base font-bold text-gray-900 leading-none mt-1 truncate w-full">
+                      <h3 className="text-base font-bold text-gray-900 leading-none mt-1 truncate w-full" title={car.name}>
                         {car.name}
                       </h3>
                       
