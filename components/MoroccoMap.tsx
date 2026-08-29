@@ -67,7 +67,25 @@ export default function MoroccoMap({ cars, hoveredCarId }: MoroccoMapProps) {
     // Clean up on unmount
     return () => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
+        const mapToCleanup = mapInstanceRef.current;
+        try {
+          // Close popups first to avoid Leaflet positioning calculations on destroyed map
+          mapToCleanup.closePopup();
+          
+          // Remove all layers individually
+          mapToCleanup.eachLayer((layer) => {
+            try {
+              mapToCleanup.removeLayer(layer);
+            } catch (e) {
+              // Ignore layer-specific removal errors
+            }
+          });
+
+          // Safely remove map instance
+          mapToCleanup.remove();
+        } catch (error) {
+          console.error("Error during Leaflet map cleanup:", error);
+        }
         mapInstanceRef.current = null;
       }
     };
@@ -79,7 +97,11 @@ export default function MoroccoMap({ cars, hoveredCarId }: MoroccoMapProps) {
     if (!map) return;
 
     // Clear old markers
-    Object.values(markersRef.current).forEach((marker) => marker.remove());
+    Object.values(markersRef.current).forEach((marker) => {
+      try {
+        marker.remove();
+      } catch (e) {}
+    });
     markersRef.current = {};
 
     if (cars.length === 0) return;
@@ -127,6 +149,15 @@ export default function MoroccoMap({ cars, hoveredCarId }: MoroccoMapProps) {
         maxZoom: 12,
       });
     }
+
+    return () => {
+      Object.values(markersRef.current).forEach((marker) => {
+        try {
+          marker.remove();
+        } catch (e) {}
+      });
+      markersRef.current = {};
+    };
   }, [cars]);
 
   // Handle hovered car style updates in real-time

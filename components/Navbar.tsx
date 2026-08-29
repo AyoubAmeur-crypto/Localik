@@ -93,10 +93,10 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex flex-row items-center gap-10">
-          <NavLink label="Devenir locataire" href="#" />
-          <NavLink label="Offres de location" href="#" />
-          <NavLink label="Comment ça marche" href="#" />
-          <NavLink label="Pourquoi nous choisir" href="#" />
+          <NavLink label="Devenir locataire" href="/devenir-locataire" />
+          <NavLink label="Offres de location" href="/marketplace" />
+          <NavLink label="Comment ça marche" href="/comment-ca-marche" />
+          <NavLink label="Pourquoi nous choisir" href="/pourquoi-nous-choisir" />
         </nav>
 
         {/* Desktop Auth Buttons */}
@@ -148,10 +148,10 @@ export default function Navbar() {
             className="absolute top-[calc(100%+12px)] left-0 right-0 bg-white/92 backdrop-blur-2xl shadow-widget rounded-widget p-6 flex flex-col gap-6 z-40 border border-white/40 lg:hidden"
           >
             <nav className="flex flex-col gap-4">
-              <NavLink label="Devenir locataire" href="#" />
-              <NavLink label="Offres de location" href="#" />
-              <NavLink label="Comment ça marche" href="#" />
-              <NavLink label="Pourquoi nous choisir" href="#" />
+              <NavLink label="Devenir locataire" href="/devenir-locataire" />
+              <NavLink label="Offres de location" href="/marketplace" />
+              <NavLink label="Comment ça marche" href="/comment-ca-marche" />
+              <NavLink label="Pourquoi nous choisir" href="/pourquoi-nous-choisir" />
             </nav>
             <hr className="border-border-gray/30" />
             <div className="flex flex-col gap-4">

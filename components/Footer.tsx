@@ -16,6 +16,23 @@ interface FooterColumnProps {
   links: string[];
 }
 
+function getLinkHref(label: string): string {
+  const normalized = label.toLowerCase().trim();
+  if (normalized === "pourquoi nous choisir") {
+    return "/pourquoi-nous-choisir";
+  }
+  if (normalized === "voitures" || normalized === "offres de location") {
+    return "/marketplace";
+  }
+  if (normalized === "devenir locataire") {
+    return "/devenir-locataire";
+  }
+  if (normalized === "comment ça marche" || normalized === "comment ca marche") {
+    return "/comment-ca-marche";
+  }
+  return "/en-construction";
+}
+
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div className="flex flex-col gap-8 w-full md:w-auto text-left">
@@ -26,7 +43,7 @@ function FooterColumn({ title, links }: FooterColumnProps) {
         {links.map((link, idx) => (
           <li key={idx}>
             <Link
-              href="#"
+              href={getLinkHref(link)}
               className="font-sans font-normal text-sm leading-[21px] text-[#D6D6D6] hover:text-primary transition-colors duration-200"
             >
               {link}
@@ -151,12 +168,12 @@ export default function Footer() {
           {/* Links columns */}
           <FooterColumn
             title="Notre Produit"
-            links={["Carrières", "Voitures", "Formules", "Fonctionnalités", "Tarifs"]}
+            links={["Carrières", "Offres de location", "Devenir locataire", "Tarifs"]}
           />
           
           <FooterColumn
             title="Ressources"
-            links={["Téléchargements", "Centre d'aide", "Guides", "Réseau partenaires", "Croisières", "Développeurs"]}
+            links={["Téléchargements", "Centre d'aide", "Guides", "Comment ça marche", "Développeurs"]}
           />
           
           <FooterColumn
