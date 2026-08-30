@@ -23,34 +23,6 @@ interface FAQItem {
 export default function DevenirLocatairePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const lottieRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let animation: any;
-    let isDestroyed = false;
-
-    import("lottie-web").then((lottieModule) => {
-      if (isDestroyed || !lottieRef.current) return;
-      
-      // Clean container first to ensure no duplicates
-      lottieRef.current.innerHTML = "";
-      
-      animation = lottieModule.default.loadAnimation({
-        container: lottieRef.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        path: "/images/Car.json?v=" + Date.now(),
-      });
-    });
-
-    return () => {
-      isDestroyed = true;
-      if (animation) {
-        animation.destroy();
-      }
-    };
-  }, []);
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -215,22 +187,19 @@ export default function DevenirLocatairePage() {
     <main ref={containerRef} className="flex flex-col flex-1 bg-white relative">
       <Navbar />
 
-      {/* Hero Section (Reduced top/bottom padding & removed grid pattern) */}
-      <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 bg-gradient-to-br from-[#ECF5FF] via-white to-white overflow-hidden border-b border-gray-100">
-        {/* Background Visual Blobs */}
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-40 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 relative z-10">
+      {/* Hero Section (Spacing matching comment-ca-marche, plain white bg) */}
+      <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 bg-white overflow-hidden border-b border-gray-100">
+        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-30 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 relative z-10">
           
           {/* Left Column: Text (Aligned Left) */}
-          <div className="w-full lg:w-[50%] flex flex-col items-center lg:items-start text-center lg:text-left mt-8 lg:mt-0">
+          <div className="w-full lg:w-[45%] flex flex-col items-center lg:items-start text-center lg:text-left mt-8 lg:mt-22">
             <h1 className="hero-animate font-sans font-semibold text-4xl md:text-5xl lg:text-[56px] leading-[1.1] text-dark tracking-tight mb-6">
               Devenez locataire sur <span className="text-primary">Localik</span>
             </h1>
 
             <p className="hero-animate font-sans font-normal text-base md:text-lg leading-[27px] text-text-gray mb-10 max-w-[600px]">
-              Rejoignez la plus grande communauté de location de voitures au Maroc. Louez des
+              Rejoignez la plus grande communauté de location de voitures au Maroc.
+              <br/> Louez des
               véhicules vérifiés auprès de propriétaires de confiance en toute simplicité.
             </p>
 
@@ -250,11 +219,23 @@ export default function DevenirLocatairePage() {
             </div>
           </div>
 
-          {/* Right Column: Lottie Animation */}
-          <div className="hero-animate w-full lg:w-[45%] flex justify-center items-center">
-            <div
-              ref={lottieRef}
-              className="w-full max-w-[500px] drop-shadow-md select-none pointer-events-none"
+          {/* Right Column: Premium Realistic Car & Typographic Backdrop */}
+          <div className="hero-animate w-full lg:w-[50%] hidden lg:flex justify-center items-center relative h-[380px] md:h-[420px] overflow-visible">
+            {/* Layer 1: Giant Typographic Backdrop */}
+            <div className="absolute top-10 md:top-5 font-sans font-black text-[139px] md:text-[150px] lg:text-[140px] text-gray-100 select-none z-0 tracking-tighter leading-none text-start">
+              DEVENEZ<br/>LOCATAIRE
+            </div>
+            
+            {/* Layer 2: Glowing Blue Spot */}
+
+            {/* Layer 3: Realistic Car PNG */}
+            <Image
+              src="/images/trocv2.png"
+              alt="Devenir Locataire Localik"
+              width={700}
+              height={500}
+              className="z-20 relative mt-auto w-full max-w-[680px] lg:max-w-[680px] h-auto object-contain select-none pointer-events-none drop-shadow-[0_20px_40px_rgba(21,114,211,0.18)] translate-y-[15px]"
+              priority
             />
           </div>
 
@@ -272,7 +253,8 @@ export default function DevenirLocatairePage() {
               Les conditions requises pour louer
             </h2>
             <p className="font-sans font-normal text-base text-text-medium-gray">
-              Pour assurer la sécurité et la sérénité de notre communauté, chaque locataire doit
+              Pour assurer la sécurité et la sérénité de notre communauté,
+               chaque locataire doit
               remplir les critères d'éligibilité suivants avant son premier trajet.
             </p>
           </div>
@@ -412,49 +394,48 @@ export default function DevenirLocatairePage() {
       </section>
 
       {/* CTA Section (Navy blue box with white dividers) */}
-      <section className="cta-section py-16 lg:py-24 bg-[#051C34] text-white relative overflow-hidden">
+      <section className="cta-section py-10 md:py-12 lg:py-16 bg-[#051C34] text-white relative overflow-hidden">
         {/* Background visual highlights */}
         <div className="absolute top-[-50%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-50%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-40 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-40 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-6 lg:gap-8">
           
           {/* Logo on Left */}
-          <div className="cta-element-animate flex-shrink-0 flex items-center justify-center lg:pr-12">
+          <div className="cta-element-animate flex-shrink-0 flex items-center justify-center lg:pr-8">
             <Image
               src="/images/localik.png"
               alt="Localik Logo"
-              width={140}
-              height={44}
-              className="brightness-0 invert opacity-90 hover:opacity-100 transition-all duration-300"
+              width={110}
+              height={35}
+              className="w-24 md:w-28 h-auto brightness-0 invert opacity-90 hover:opacity-100 transition-all duration-300"
               priority
             />
           </div>
 
           {/* Vertical white divider line 1 */}
-          <div className="cta-element-animate hidden lg:block w-[1px] h-20 bg-white/20 flex-shrink-0" />
+          <div className="cta-element-animate hidden lg:block w-[1px] h-12 bg-white/20 flex-shrink-0" />
 
           {/* Texts in Middle */}
-          <div className="cta-element-animate flex-grow lg:px-12 text-center lg:text-left">
-            <h2 className="font-sans font-semibold text-3xl md:text-4xl leading-[1.2] text-white">
+          <div className="cta-element-animate flex-grow lg:px-8 text-center lg:text-left">
+            <h2 className="font-sans font-semibold text-xl md:text-2xl lg:text-3xl leading-[1.2] text-white">
               Trouvez la voiture idéale pour votre prochain déplacement
             </h2>
-            <p className="font-sans font-normal text-base text-text-footer-link/80 mt-2">
-              Des centaines de voitures disponibles à Casablanca, Marrakech, Rabat, Tanger et
-              partout au Maroc.
+            <p className="font-sans font-normal text-xs md:text-sm text-text-footer-link/80 mt-1">
+              Des centaines de voitures disponibles à Casablanca, Marrakech, Rabat, Tanger et partout au Maroc.
             </p>
           </div>
 
           {/* Vertical white divider line 2 */}
-          <div className="cta-element-animate hidden lg:block w-[1px] h-20 bg-white/20 flex-shrink-0" />
+          <div className="cta-element-animate hidden lg:block w-[1px] h-12 bg-white/20 flex-shrink-0" />
 
           {/* CTA Button on Right */}
-          <div className="cta-element-animate flex-shrink-0 flex items-center justify-center lg:pl-12 w-full lg:w-auto">
+          <div className="cta-element-animate flex-shrink-0 flex items-center justify-center lg:pl-8 w-full lg:w-auto">
             <Button
               label="Découvrir les offres"
               variant="primary"
               href="/marketplace"
-              className="bg-primary hover:bg-blue-600 font-sans px-10 py-4 shadow-md w-full lg:w-auto text-center whitespace-nowrap"
+              className="bg-primary hover:bg-blue-600 font-sans px-6 py-3 lg:px-8 lg:py-3.5 shadow-md w-full lg:w-auto text-center whitespace-nowrap"
             />
           </div>
         </div>

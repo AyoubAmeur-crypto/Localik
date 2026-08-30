@@ -42,7 +42,7 @@ export default function Button({
 
   if (href) {
     return (
-      <Link href={href} className={combinedClasses}>
+      <Link href={href} className={combinedClasses} onClick={onClick}>
         {content}
       </Link>
     );
