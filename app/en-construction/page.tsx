@@ -29,15 +29,6 @@ export default function EnConstructionPage() {
           delay: 0.2,
         }
       );
-
-      // Pulse animation for the gear image container
-      gsap.to(".gear-pulse", {
-        scale: 1.05,
-        duration: 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "power1.inOut",
-      });
     },
     { scope: containerRef }
   );
@@ -53,23 +44,11 @@ export default function EnConstructionPage() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 flex flex-col items-center justify-center relative z-10 text-center">
-          {/* Card Container with glassmorphism */}
-          <div className="construction-animate-fade w-full max-w-2xl bg-white/70 backdrop-blur-md border border-gray-100 shadow-widget p-8 md:p-12 flex flex-col items-center gap-8">
+          {/* Content Wrapper */}
+          <div className="construction-animate-fade w-full max-w-3xl flex flex-col items-center gap-8 px-4">
             
-            {/* Localik Logo */}
-            <div className="construction-animate-fade flex justify-center">
-              <Image
-                src="/images/localik.png"
-                alt="Localik Logo"
-                width={120}
-                height={38}
-                className="h-auto select-none pointer-events-none"
-                priority
-              />
-            </div>
-
-            {/* Gear animation */}
-            <div className="construction-animate-fade gear-pulse w-36 h-36 relative flex items-center justify-center">
+            {/* Gear illustration */}
+            <div className="construction-animate-fade w-36 h-36 relative flex items-center justify-center">
               <Image
                 src="/images/Gear how it works.svg"
                 alt="Working on it"

@@ -52,29 +52,7 @@ export default function Navbar() {
 
   // No scroll morph animation needed - using simple and performant CSS transitions instead
 
-  // Mobile menu opening animation
-  useGSAP(
-    () => {
-      if (mobileMenuOpen && mobileMenuRef.current) {
-        gsap.fromTo(
-          mobileMenuRef.current,
-          {
-            opacity: 0,
-            y: -15,
-            scale: 0.96,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.4,
-            ease: "back.out(1.2)", // bouncy organic entry
-          }
-        );
-      }
-    },
-    { dependencies: [mobileMenuOpen], scope: containerRef }
-  );
+  // Mobile menu animated via CSS transition classes to keep it high performance
 
   return (
     <header
@@ -141,30 +119,59 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <div
-            ref={mobileMenuRef}
-            className="absolute top-[calc(100%+12px)] left-0 right-0 bg-white/92 backdrop-blur-2xl shadow-widget rounded-widget p-6 flex flex-col gap-6 z-40 border border-white/40 lg:hidden"
+      </div>
+
+      {/* Mobile Navigation Drawer (Fullscreen slide-in from right-to-left) */}
+      <div
+        ref={mobileMenuRef}
+        className={`fixed top-0 right-0 h-screen w-screen bg-white shadow-2xl p-8 flex flex-col gap-8 z-[100] transition-all duration-300 ease-in-out lg:hidden pointer-events-auto ${
+          mobileMenuOpen ? "translate-x-0 visible" : "translate-x-full invisible"
+        }`}
+      >
+        {/* Mobile Header with logo and Close button */}
+        <div className="flex items-center justify-between">
+          <BrandLogo />
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="p-2 text-text-gray hover:text-primary focus:outline-none cursor-pointer"
+            aria-label="Close Navigation Menu"
           >
-            <nav className="flex flex-col gap-4">
-              <NavLink label="Devenir locataire" href="/devenir-locataire" />
-              <NavLink label="Offres de location" href="/marketplace" />
-              <NavLink label="Comment ça marche" href="/comment-ca-marche" />
-              <NavLink label="Pourquoi nous choisir" href="/pourquoi-nous-choisir" />
-            </nav>
-            <hr className="border-border-gray/30" />
-            <div className="flex flex-col gap-4">
-              <Button
-                label="Espace Propriétaire"
-                variant="primary"
-                size="md"
-                href="/espace-proprietaire"
-                className="w-full py-3"
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
               />
-            </div>
-          </div>
-        )}
+            </svg>
+          </button>
+        </div>
+
+        <nav className="flex flex-col gap-6 mt-8">
+          <NavLink label="Devenir locataire" href="/devenir-locataire" onClick={() => setMobileMenuOpen(false)} />
+          <NavLink label="Offres de location" href="/marketplace" onClick={() => setMobileMenuOpen(false)} />
+          <NavLink label="Comment ça marche" href="/comment-ca-marche" onClick={() => setMobileMenuOpen(false)} />
+          <NavLink label="Pourquoi nous choisir" href="/pourquoi-nous-choisir" onClick={() => setMobileMenuOpen(false)} />
+        </nav>
+        
+        <hr className="border-border-gray/30 my-4" />
+        
+        <div className="flex flex-col gap-4 mt-auto">
+          <Button
+            label="Espace Propriétaire"
+            variant="primary"
+            size="md"
+            href="/espace-proprietaire"
+            className="w-full py-4 text-center text-base"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        </div>
       </div>
     </header>
   );
