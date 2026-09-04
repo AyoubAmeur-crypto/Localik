@@ -212,7 +212,7 @@ export default function SearchWidget() {
               setIsDateOpen(!isDateOpen);
               setIsLocationOpen(false);
             }}
-            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 lg:border-l lg:border-gray-200 lg:pl-6 ${
+            className={`flex flex-row items-center gap-3 xl:gap-4 w-full lg:w-1/2 cursor-pointer p-2.5 xl:p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 lg:border-l lg:border-gray-200 lg:pl-4 xl:pl-6 ${
               isDateOpen ? "bg-gray-50" : ""
             }`}
           >
@@ -240,7 +240,7 @@ export default function SearchWidget() {
               setIsDateOpen(!isDateOpen);
               setIsLocationOpen(false);
             }}
-            className={`flex flex-row items-center gap-4 w-full lg:w-1/2 cursor-pointer p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 sm:border-l sm:border-gray-200 sm:pl-6 lg:border-l lg:border-gray-200 lg:pl-6 ${
+            className={`flex flex-row items-center gap-3 xl:gap-4 w-full lg:w-1/2 cursor-pointer p-2.5 xl:p-3 rounded-none hover:bg-gray-50/80 transition-colors z-10 sm:border-l sm:border-gray-200 sm:pl-4 xl:pl-6 lg:border-l lg:border-gray-200 lg:pl-4 xl:pl-6 ${
               isDateOpen ? "bg-gray-50" : ""
             }`}
           >
@@ -309,7 +309,7 @@ export default function SearchWidget() {
         label="Rechercher"
         variant="primary"
         onClick={handleSearchSubmit}
-        className="w-full lg:w-[159px] h-12 py-0 text-base flex-shrink-0 z-10 transition-transform active:scale-95"
+        className="w-full lg:w-[140px] xl:w-[159px] h-12 py-0 text-sm xl:text-base flex-shrink-0 z-10 transition-transform active:scale-95"
       />
 
       {/* Desktop-only fix: force the two datepicker months into an aligned flex row.

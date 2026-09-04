@@ -98,15 +98,15 @@ function FeatureItem({ icon, title, description }: FeatureItemProps) {
   };
 
   return (
-    <div className="flex flex-row items-center gap-6 w-full text-left">
-      <div className="flex-shrink-0 w-16 h-16 rounded-icon-container bg-bg-accent-blue flex items-center justify-center">
+    <div className="flex flex-row items-center gap-4 xl:gap-6 w-full text-left">
+      <div className="flex-shrink-0 w-14 h-14 xl:w-16 xl:h-16 rounded-icon-container bg-bg-accent-blue flex items-center justify-center">
         {renderIcon()}
       </div>
-      <div className="flex flex-col gap-2">
-        <h3 className="font-sans font-medium text-xl leading-[30px] text-black">
+      <div className="flex flex-col gap-1.5 xl:gap-2">
+        <h3 className="font-sans font-medium text-lg xl:text-xl leading-[24px] xl:leading-[30px] text-black">
           {title}
         </h3>
-        <p className="font-sans font-normal text-base leading-6 text-text-medium-gray max-w-[420px]">
+        <p className="font-sans font-normal text-sm xl:text-base leading-5 xl:leading-6 text-text-medium-gray max-w-[380px] xl:max-w-[420px]">
           {description}
         </p>
       </div>
@@ -162,7 +162,7 @@ export default function WhyChooseUs() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="relative w-full bg-white lg:h-[900px] min-h-[800px] lg:min-h-0 flex flex-col justify-center py-16 lg:px-40 lg:py-0 overflow-hidden ">
+    <section ref={containerRef} className="relative w-full bg-white lg:h-[840px] xl:h-[880px] 2xl:h-[900px] min-h-[800px] lg:min-h-0 flex flex-col justify-center py-16 lg:px-8 xl:px-12 2xl:px-40 lg:py-0 overflow-hidden">
 
       {/* Decorative Left Vector - Desktop Only */}
       <div className="absolute top-[100px] left-[-200px] w-[650px] h-[650px] pointer-events-none hidden lg:block select-none opacity-60 z-0">
@@ -180,7 +180,7 @@ export default function WhyChooseUs() {
       <div className="relative w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-0 h-full flex flex-col lg:flex-row items-center justify-between">
 
         {/* Left Side: Overlapping Car Image */}
-        <div className="why-animate-car relative w-full max-w-[750px] lg:max-w-none lg:w-[950px] lg:h-[480px] lg:absolute lg:top-[160px] lg:left-[-220px] pointer-events-none flex justify-center items-center order-2 lg:order-1 mt-12 lg:mt-0 z-10">
+        <div className="why-animate-car relative w-full max-w-[750px] lg:max-w-none lg:w-[620px] lg:h-[350px] xl:w-[780px] xl:h-[420px] 2xl:w-[950px] 2xl:h-[480px] lg:absolute lg:top-[220px] xl:top-[190px] 2xl:top-[160px] lg:left-[-100px] xl:left-[-160px] 2xl:left-[-220px] pointer-events-none flex justify-center items-center order-2 lg:order-1 mt-12 lg:mt-0 z-10">
           <Image
             src="/images/trocv2.png"
             alt="Volkswagen T-Roc graphic"
@@ -192,18 +192,18 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Right Side: Text details and features list */}
-        <div className="flex flex-col gap-5 max-w-[576px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[92px] lg:left-[733px] z-10 order-1 lg:order-2">
+        <div className="flex flex-col gap-4 xl:gap-5 max-w-[576px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[60px] xl:top-[76px] 2xl:top-[92px] lg:left-[480px] xl:left-[580px] 2xl:left-[733px] lg:max-w-[460px] xl:max-w-[520px] 2xl:max-w-[576px] z-10 order-1 lg:order-2">
 
           {/* Header titles */}
-          <div className="why-animate-header flex flex-col items-center lg:items-start gap-[32px] w-full">
+          <div className="why-animate-header flex flex-col items-center lg:items-start gap-4 xl:gap-6 2xl:gap-[32px] w-full">
             <CategoryBadge label="POURQUOI NOUS CHOISIR" />
-            <h2 className="font-sans font-medium text-[32px] md:text-[36px] lg:text-[38px] leading-[1.3] text-text-dark-gray max-w-[480px]">
+            <h2 className="font-sans font-medium text-[32px] md:text-[36px] lg:text-[30px] xl:text-[34px] 2xl:text-[38px] leading-[1.3] text-text-dark-gray max-w-[480px]">
               Nous offrons la meilleure expérience avec nos offres de location
             </h2>
           </div>
 
           {/* Features grid */}
-          <div className="why-animate-features flex flex-col gap-10 w-full mt-4">
+          <div className="why-animate-features flex flex-col gap-6 xl:gap-8 2xl:gap-10 w-full mt-2 xl:mt-4">
             <FeatureItem
               icon="wallet"
               title="Meilleur prix garanti"

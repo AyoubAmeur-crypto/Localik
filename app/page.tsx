@@ -23,7 +23,7 @@ export default async function Home() {
   }));
 
   return (
-    <main className="flex flex-col flex-1 bg-white relative">
+    <main className="flex flex-col flex-1 bg-white relative overflow-x-clip">
       <Navbar />
       <HeroSection />
       <WhyChooseUs />

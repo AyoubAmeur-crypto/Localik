@@ -57,11 +57,11 @@ export default function Navbar() {
   return (
     <header
       ref={containerRef}
-      className="fixed top-0 left-0 right-0 w-full z-50 flex justify-center pointer-events-none pt-4 lg:pt-4 px-4 md:px-12 lg:px-0 opacity-0"
+      className="fixed top-0 left-0 right-0 w-full z-50 flex justify-center pointer-events-none pt-4 lg:pt-4 px-4 md:px-8 lg:px-8 xl:px-12 2xl:px-0 opacity-0"
     >
       <div
         ref={navCardRef}
-        className={`pointer-events-auto relative w-full max-w-[1320px] flex flex-row items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] py-4 px-8 border ${
+        className={`pointer-events-auto relative w-full max-w-[1320px] flex flex-row items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] py-4 px-6 xl:px-8 border ${
           scrolled
             ? "bg-white border-gray-100 shadow-md rounded-xl scale-[0.98] lg:scale-100"
             : "bg-transparent border-transparent shadow-none rounded-none scale-100"
@@ -70,7 +70,7 @@ export default function Navbar() {
         <BrandLogo />
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex flex-row items-center gap-10">
+        <nav className="hidden lg:flex flex-row items-center gap-6 xl:gap-10">
           <NavLink label="Devenir locataire" href="/devenir-locataire" />
           <NavLink label="Offres de location" href="/marketplace" />
           <NavLink label="Comment ça marche" href="/comment-ca-marche" />
@@ -78,7 +78,7 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Auth Buttons */}
-        <div className="hidden lg:flex flex-row items-center gap-6">
+        <div className="hidden lg:flex flex-row items-center gap-4 xl:gap-6">
           <Button
             label="Espace Propriétaire"
             variant="primary"

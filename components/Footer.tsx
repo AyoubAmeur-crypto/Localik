@@ -75,10 +75,10 @@ export default function Footer() {
 
   return (
     <footer ref={containerRef} className="w-full bg-[#051C34] py-16 lg:py-20 text-white overflow-hidden">
-      <div className="footer-animate-content w-full max-w-[1440px] mx-auto px-4 md:px-[160px] flex flex-col gap-12">
+      <div className="footer-animate-content w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-12 lg:px-10 xl:px-16 2xl:px-[160px] flex flex-col gap-12">
         
         {/* Main Columns Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 items-start w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-6 xl:gap-8 items-start w-full">
           
           {/* Logo & Info column */}
           <div className="flex flex-col gap-8 lg:col-span-1 text-left">
