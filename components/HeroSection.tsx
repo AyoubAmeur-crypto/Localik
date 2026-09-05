@@ -51,10 +51,10 @@ export default function HeroSection() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="relative w-full bg-white overflow-x-clip overflow-y-visible lg:h-[860px] min-h-[860px] lg:min-h-0 z-30">
+    <section ref={containerRef} className="relative w-full bg-white overflow-x-clip overflow-y-visible lg:h-[800px] xl:h-[830px] 2xl:h-[860px] min-h-[860px] lg:min-h-0 z-30">
       
       {/* Decorative Background Blob - Desktop Only */}
-      <div className="absolute top-[-33px] left-[866px] w-[803px] h-[866px] opacity-[0.13] pointer-events-none hidden lg:block">
+      <div className="absolute top-[-33px] right-[-150px] xl:right-[-50px] 2xl:right-auto 2xl:left-[866px] w-[600px] xl:w-[720px] 2xl:w-[803px] h-[866px] opacity-[0.13] pointer-events-none hidden lg:block">
         <Image
           src="/images/bg-blob.svg"
           alt=""
@@ -66,14 +66,14 @@ export default function HeroSection() {
       </div>
 
       {/* Main Responsive Wrapper */}
-      <div className="relative w-full max-w-[1440px] mx-auto h-full px-4 md:px-12 lg:px-0 py-8 lg:py-0">
+      <div className="relative w-full max-w-[1440px] mx-auto h-full px-4 md:px-12 lg:px-8 xl:px-12 2xl:px-0 py-8 lg:py-0">
         
         {/* Responsive Content Container - pt-24 md:pt-28 to push it down below the floating glass navbar on mobile */}
         <div className="flex flex-col items-center gap-12 pt-24 md:pt-28 lg:pt-0 mt-0 lg:block">
           
           {/* Left Text Block */}
-          <div className="hero-animate-text flex flex-col gap-10 max-w-[480px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[160px] lg:left-[160px] lg:w-[480px] z-10">
-            <h1 className="font-sans font-semibold text-[48px] md:text-[54px] lg:text-[60px] leading-[1.1] md:leading-[1.1] lg:leading-[66px] text-dark tracking-tight">
+          <div className="hero-animate-text flex flex-col gap-6 xl:gap-8 2xl:gap-10 max-w-[480px] w-full text-center lg:text-left items-center lg:items-start lg:absolute lg:top-[130px] xl:top-[145px] 2xl:top-[160px] lg:left-8 xl:left-12 2xl:left-[160px] lg:w-[440px] xl:w-[470px] 2xl:w-[480px] z-10">
+            <h1 className="font-sans font-semibold text-[48px] md:text-[54px] lg:text-[42px] xl:text-[50px] 2xl:text-[60px] leading-[1.1] md:leading-[1.1] lg:leading-[48px] xl:leading-[56px] 2xl:leading-[66px] text-dark tracking-tight">
               Trouvez, réservez et louez <br />
               <span className="relative inline-block text-primary whitespace-nowrap mt-1 lg:mt-0">
                 Facilement
@@ -101,7 +101,7 @@ export default function HeroSection() {
           </div>
 
           {/* Right Car Image Block */}
-          <div className="hero-animate-car relative w-full max-w-[650px] md:max-w-[600px] lg:max-w-none lg:w-[848px] lg:h-[537px] lg:absolute lg:top-[182px] lg:left-[649px] pointer-events-none flex justify-center items-center">
+          <div className="hero-animate-car relative w-full max-w-[650px] md:max-w-[600px] lg:max-w-none lg:w-[580px] lg:h-[370px] xl:w-[700px] xl:h-[440px] 2xl:w-[848px] 2xl:h-[537px] lg:absolute lg:top-[150px] xl:top-[165px] 2xl:top-[182px] lg:right-0 xl:right-4 2xl:right-auto 2xl:left-[649px] pointer-events-none flex justify-center items-center">
             <Image
               src="/images/touareg.png"
               alt="Rentcar Header Graphic"
@@ -115,7 +115,7 @@ export default function HeroSection() {
         </div>
 
         {/* Floating Search Widget */}
-        <div className="hero-animate-widget relative mt-12 lg:mt-0 lg:absolute lg:top-[740px] lg:left-[160px] lg:w-[1120px] z-40 bg-white rounded-widget shadow-widget border border-gray-100 p-6 md:p-8 lg:py-3 lg:pr-3 lg:pl-8 min-h-[72px] w-full">
+        <div className="hero-animate-widget relative mt-12 lg:mt-0 lg:absolute lg:top-[670px] xl:top-[700px] 2xl:top-[740px] lg:left-8 lg:right-8 xl:left-12 xl:right-12 2xl:left-[160px] 2xl:right-auto 2xl:w-[1120px] max-w-[1120px] mx-auto 2xl:mx-0 z-40 bg-white rounded-widget shadow-widget border border-gray-100 p-6 md:p-8 lg:py-3 lg:pr-3 lg:pl-6 xl:pl-8 min-h-[72px] w-full">
           <SearchWidget />
         </div>
 

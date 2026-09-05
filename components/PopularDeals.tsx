@@ -141,23 +141,25 @@ export default function PopularDeals({ initialCars = [], initialHasMore = false 
       ease: "power3.out",
     });
 
-    // Animate the CTA button fading in
-    gsap.from(".popular-animate-btn", {
-      scrollTrigger: {
-        trigger: ".popular-animate-btn",
-        start: "top 92%",
-        toggleActions: "play none none none",
-      },
-      scale: 0.95,
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.out",
-    });
+    // Animate the CTA button fading in (if present)
+    if (containerRef.current?.querySelector(".popular-animate-btn")) {
+      gsap.from(".popular-animate-btn", {
+        scrollTrigger: {
+          trigger: ".popular-animate-btn",
+          start: "top 92%",
+          toggleActions: "play none none none",
+        },
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+    }
   }, { scope: containerRef });
 
   return (
     <section ref={containerRef} className="relative w-full bg-white lg:py-24 py-16 flex flex-col justify-center overflow-hidden">
-      <div className="relative w-full max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-[16px] flex flex-col items-center">
+      <div className="relative w-full max-w-[1440px] mx-auto px-4 md:px-8 lg:px-8 xl:px-10 2xl:px-4 flex flex-col items-center">
         
         {/* Title stack block */}
         <div className="popular-animate-header flex flex-col items-center text-center gap-6 mb-16">
@@ -176,7 +178,7 @@ export default function PopularDeals({ initialCars = [], initialHasMore = false 
         </div>
 
         {/* Responsive Cards Layout */}
-        <div className="popular-animate-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 justify-items-center items-stretch gap-6 xl:gap-8 w-full mb-16">
+        <div className="popular-animate-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 justify-items-center items-stretch gap-6 xl:gap-6 2xl:gap-8 w-full mb-16">
           {displayCars.map((car, index) => (
             <div
               key={car.id}
